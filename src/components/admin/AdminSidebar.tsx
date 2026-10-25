@@ -1,14 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Users,
   Stethoscope,
   Building2,
-  CalendarDays,
-  CalendarClock,
-  FileText,
+  BrainCircuit,
   BarChart3,
   ScrollText,
   Settings,
@@ -22,19 +21,17 @@ import { sidebarRailStyle } from "@/components/transitions/sidebar";
 import { useComingSoon } from "./ComingSoon";
 import { cn } from "@/lib/cn";
 
-type NavItem = { label: string; icon: LucideIcon; href?: string; active?: boolean };
+type NavItem = { label: string; icon: LucideIcon; href?: string; color: string };
 
 const NAV: NavItem[] = [
-  { label: "Overview", icon: LayoutDashboard, href: "/admin/dashboard", active: true },
-  { label: "Users", icon: Users },
-  { label: "Doctors & Staff", icon: Stethoscope },
-  { label: "Departments", icon: Building2 },
-  { label: "Appointments", icon: CalendarDays },
-  { label: "Schedules", icon: CalendarClock },
-  { label: "AI Reports", icon: FileText },
-  { label: "Analytics", icon: BarChart3 },
-  { label: "Audit Logs", icon: ScrollText },
-  { label: "System Settings", icon: Settings },
+  { label: "Overview", icon: LayoutDashboard, href: "/admin/dashboard", color: "#0A9189" },
+  { label: "Users", icon: Users, href: "/admin/users", color: "#0A9189" },
+  { label: "Doctors & Staff", icon: Stethoscope, href: "/admin/doctors-staff", color: "#3B6EF6" },
+  { label: "Departments", icon: Building2, href: "/admin/departments", color: "#8B5CF6" },
+  { label: "AI Monitoring", icon: BrainCircuit, href: "/admin/ai-monitoring", color: "#0A9189" },
+  { label: "Analytics", icon: BarChart3, color: "#1E9E56" },
+  { label: "Audit Logs", icon: ScrollText, color: "#6366F1" },
+  { label: "System Settings", icon: Settings, color: "#64748B" },
 ];
 
 export function AdminSidebar({
@@ -102,6 +99,14 @@ function SidebarBody({
   onNavigate?: () => void;
 }) {
   const comingSoon = useComingSoon();
+  const pathname = usePathname();
+
+  const isActive = (item: NavItem) => {
+    if (!item.href) return false;
+    if (item.href === "/admin/users") return pathname.startsWith("/admin/users");
+    if (item.href === "/admin/doctors-staff") return pathname.startsWith("/admin/doctors-staff");
+    return pathname === item.href;
+  };
 
   return (
     <>
@@ -134,6 +139,7 @@ function SidebarBody({
             <NavRow
               key={item.label}
               item={item}
+              active={isActive(item)}
               collapsed={collapsed}
               onNavigate={onNavigate}
               onComingSoon={comingSoon}
@@ -173,11 +179,13 @@ function SidebarBody({
 
 function NavRow({
   item,
+  active,
   collapsed,
   onNavigate,
   onComingSoon,
 }: {
   item: NavItem;
+  active: boolean;
   collapsed: boolean;
   onNavigate?: () => void;
   onComingSoon: (label: string) => void;
@@ -186,17 +194,14 @@ function NavRow({
   const cls = cn(
     "relative flex items-center overflow-hidden rounded-xl transition-colors",
     collapsed ? "mx-auto h-9 w-9 justify-center gap-0 px-0" : "h-9 w-full gap-2.5 px-2.5",
-    item.active
+    active
       ? "bg-[#E6FAF7] font-semibold text-[#0A9189]"
       : "text-[#5B6B7C] hover:bg-surface-subtle hover:text-navy",
   );
 
   const inner = (
     <>
-      <Icon
-        size={16}
-        className={cn("shrink-0", item.active ? "text-[#0A9189]" : "text-[#7A8B9C]")}
-      />
+      <Icon size={16} className="shrink-0" style={{ color: item.color }} />
       <span
         className={cn(
           "min-w-0 truncate whitespace-nowrap text-[12.5px] transition-opacity duration-150",
@@ -211,14 +216,14 @@ function NavRow({
   return (
     <li className="group relative">
       {/* active indicator (outside the item's clip so it sits at the rail edge) */}
-      {item.active && !collapsed && (
+      {active && !collapsed && (
         <span className="absolute -left-2.5 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-[#0A9189]" />
       )}
 
       {item.href ? (
         <Link
           href={item.href}
-          aria-current="page"
+          aria-current={active ? "page" : undefined}
           aria-label={collapsed ? item.label : undefined}
           onClick={onNavigate}
           className={cls}

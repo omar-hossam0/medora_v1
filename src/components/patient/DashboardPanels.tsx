@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   ChevronRight,
   ChevronDown,
@@ -11,7 +12,7 @@ import {
   Pill,
   FlaskConical,
   FolderOpen,
-  Users,
+  Smartphone,
   type LucideIcon,
 } from "lucide-react";
 import {
@@ -29,31 +30,47 @@ import { cn } from "@/lib/cn";
 export function RecentAppointmentsCard() {
   const comingSoon = useComingSoon();
   return (
-    <div className="rounded-2xl border border-line bg-white p-5 lg:col-span-12 xl:col-span-5">
+    <div className="flex h-full flex-col rounded-2xl border border-[#E6EFEE] bg-white p-4 shadow-[0_8px_26px_-22px_rgba(15,45,74,0.28)] xl:col-span-5">
       <div className="flex items-center justify-between">
-        <h3 className="text-[13.5px] font-semibold text-[#0F2D4A]">Recent Appointments</h3>
+        <h3 className="text-[15px] font-semibold text-[#0F2D4A]">Recent Appointments</h3>
         <button
           type="button"
           onClick={() => comingSoon("All appointments")}
-          className="text-[11.5px] font-semibold text-[#0A9189] hover:underline"
+          className="text-[11px] font-semibold text-[#0A9189] transition hover:underline"
         >
-          View All
+          See All
         </button>
       </div>
-      <ul className="mt-2 divide-y divide-line">
-        {recentAppointments.map((a) => (
-          <li key={a.id} className="flex items-center gap-3 py-3">
-            <Avatar name={a.doctor} size={38} />
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-[12.5px] font-semibold text-[#0F2D4A]">{a.doctor}</p>
-              <p className="text-[10.5px] text-ink-muted">{a.specialty}</p>
-            </div>
-            <div className="hidden text-right sm:block">
-              <p className="text-[11px] text-[#5B6B7C]">{a.date}</p>
-              <p className="text-[10.5px] text-ink-muted">{a.time}</p>
-            </div>
-            <StatusBadge status={a.status} />
-            <ChevronRight size={14} className="shrink-0 text-ink-muted" />
+
+      <ul className="mt-1.5 flex-1">
+        {recentAppointments.map((appointment) => (
+          <li key={appointment.id} className="border-b border-[#EEF4F4] last:border-0">
+            <button
+              type="button"
+              onClick={() => comingSoon("Appointment details")}
+              className="flex w-full items-center gap-2.5 py-2.5 text-left transition hover:bg-[#FAFDFD] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0A9189]"
+            >
+              <Avatar name={appointment.doctor} size={34} />
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-[11.5px] font-semibold text-[#0F2D4A]">
+                  {appointment.doctor}
+                </span>
+                <span className="block truncate text-[9.5px] text-ink-muted">
+                  {appointment.specialty}
+                </span>
+                <span className="mt-0.5 block truncate text-[8.5px] text-ink-muted sm:hidden">
+                  {appointment.date} · {appointment.time}
+                </span>
+              </span>
+              <span className="hidden shrink-0 text-right sm:block">
+                <span className="block text-[9.5px] text-[#5B6B7C]">
+                  {appointment.date}
+                </span>
+                <span className="block text-[9px] text-ink-muted">{appointment.time}</span>
+              </span>
+              <StatusBadge status={appointment.status} />
+              <ChevronRight size={13} className="shrink-0 text-ink-muted" />
+            </button>
           </li>
         ))}
       </ul>
@@ -75,55 +92,93 @@ const VITAL_TONES: Record<VitalTone, { bg: string; fg: string; line: string }> =
   violet: { bg: "bg-[#F3EEFF]", fg: "text-[#8B5CF6]", line: "#8B5CF6" },
 };
 
+const HEALTH_RANGES = ["Last 3 Months", "Last 6 Months", "Last 12 Months"] as const;
+
 export function HealthSummaryCard() {
   const comingSoon = useComingSoon();
+  const [range, setRange] = useState<(typeof HEALTH_RANGES)[number]>("Last 6 Months");
+
   return (
-    <div className="rounded-2xl border border-line bg-white p-5 lg:col-span-6 xl:col-span-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-[13.5px] font-semibold text-[#0F2D4A]">Your Health Summary</h3>
-        <button
-          type="button"
-          onClick={() => comingSoon("Health range filter")}
-          className="inline-flex items-center gap-1 rounded-full border border-line px-2.5 py-1 text-[10.5px] text-[#5B6B7C] transition hover:bg-surface-subtle"
-        >
-          Last 6 Months <ChevronDown size={12} />
-        </button>
+    <div className="flex h-full flex-col rounded-2xl border border-[#E6EFEE] bg-white p-4 shadow-[0_8px_26px_-22px_rgba(15,45,74,0.28)] xl:col-span-4">
+      <div className="flex items-center justify-between gap-2">
+        <h3 className="text-[15px] font-semibold text-[#0F2D4A]">Your Health Summary</h3>
+        <label className="relative inline-flex shrink-0 items-center">
+          <span className="sr-only">Health summary period</span>
+          <select
+            value={range}
+            onChange={(event) =>
+              setRange(event.target.value as (typeof HEALTH_RANGES)[number])
+            }
+            className="h-7 appearance-none rounded-full border border-[#E2ECEA] bg-white pl-2.5 pr-6 text-[9.5px] text-[#5B6B7C] outline-none transition hover:bg-[#F8FCFB] focus:border-[#0A9189] focus:ring-2 focus:ring-[#0A9189]/15"
+          >
+            {HEALTH_RANGES.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+          <ChevronDown
+            size={11}
+            aria-hidden
+            className="pointer-events-none absolute right-2 text-[#8A99A8]"
+          />
+        </label>
       </div>
-      <div className="mt-3 grid grid-cols-2 gap-2.5">
-        {vitals.map((v) => {
-          const Icon = VITAL_ICONS[v.icon];
-          const tone = VITAL_TONES[v.tone];
+
+      <div className="mt-2.5 grid grid-cols-2 gap-2.5">
+        {vitals.map((vital) => {
+          const Icon = VITAL_ICONS[vital.icon];
+          const tone = VITAL_TONES[vital.tone];
           return (
-            <div key={v.key} className="rounded-xl border border-line/70 p-3">
-              <div className="flex items-center gap-2">
+            <div
+              key={vital.key}
+              className="rounded-xl border border-[#EBF2F1] bg-white p-2.5"
+            >
+              <div className="flex items-center gap-1.5">
                 <span
                   className={cn(
-                    "grid h-8 w-8 shrink-0 place-items-center rounded-full",
+                    "grid h-7 w-7 shrink-0 place-items-center rounded-full",
                     tone.bg,
                     tone.fg,
                   )}
                 >
-                  <Icon size={15} />
+                  <Icon size={14} />
                 </span>
-                <div className="min-w-0">
-                  <p className="text-[15px] font-bold leading-none text-[#0F2D4A]">
-                    {v.value}
-                    {v.unit && (
-                      <span className="ml-0.5 text-[10px] font-medium text-ink-muted">
-                        {v.unit}
-                      </span>
-                    )}
-                  </p>
-                  <p className="mt-1 text-[10px] text-[#5B6B7C]">{v.label}</p>
-                </div>
+                <span className="min-w-0">
+                  <span className="block whitespace-nowrap text-[14px] font-bold leading-none text-[#0F2D4A]">
+                    {vital.value}
+                    <span className="ml-0.5 text-[8.5px] font-medium text-ink-muted">
+                      {vital.unit}
+                    </span>
+                  </span>
+                  <span className="mt-1 block truncate text-[9px] text-[#5B6B7C]">
+                    {vital.label}
+                  </span>
+                </span>
               </div>
-              <div className="mt-2">
-                <Sparkline points={v.trend} color={tone.line} width={130} height={24} />
+              <div className="mt-1.5 flex justify-center">
+                <Sparkline points={vital.trend} color={tone.line} width={128} height={22} />
               </div>
             </div>
           );
         })}
       </div>
+
+      <button
+        type="button"
+        onClick={() => comingSoon("Health metrics")}
+        className="mt-2.5 flex w-full items-center gap-2 rounded-xl bg-[#EAFBF8] px-3 py-2 text-left transition hover:bg-[#DDF7F2]"
+      >
+        <span className="min-w-0 flex-1">
+          <span className="block text-[10.5px] font-semibold text-[#0F2D4A]">
+            All Health Metrics
+          </span>
+          <span className="block text-[9px] text-[#7A8B9C]">
+            View your detailed health information
+          </span>
+        </span>
+        <ChevronRight size={13} className="shrink-0 text-[#5B6B7C]" />
+      </button>
     </div>
   );
 }
@@ -139,46 +194,56 @@ const QUICK_ICONS: Record<QuickIcon, LucideIcon> = {
 export function QuickActionsCard() {
   const comingSoon = useComingSoon();
   return (
-    <div className="rounded-2xl border border-line bg-white p-5 lg:col-span-6 xl:col-span-3">
-      <h3 className="text-[13.5px] font-semibold text-[#0F2D4A]">Quick Actions</h3>
-      <div className="mt-3 grid grid-cols-2 gap-2">
-        {quickActions.map((q) => {
-          const Icon = QUICK_ICONS[q.icon];
+    <div className="flex h-full flex-col rounded-2xl border border-[#E6EFEE] bg-white p-4 shadow-[0_8px_26px_-22px_rgba(15,45,74,0.28)] lg:col-span-2 xl:col-span-3">
+      <h3 className="text-[15px] font-semibold text-[#0F2D4A]">Quick Actions</h3>
+      <div className="mt-2.5 grid grid-cols-2 gap-2">
+        {quickActions.map((action) => {
+          const Icon = QUICK_ICONS[action.icon];
           return (
             <button
-              key={q.key}
+              key={action.key}
               type="button"
-              onClick={() => comingSoon(q.label)}
-              className="group flex items-center gap-1.5 rounded-xl border border-line/70 p-2 text-left transition hover:border-primary/30 hover:bg-surface-subtle"
+              onClick={() => comingSoon(action.label)}
+              className="group flex items-center gap-1.5 rounded-xl border border-[#EBF2F1] p-2 text-left transition hover:border-[#CFE9E5] hover:bg-[#F8FCFB] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0A9189]"
             >
               <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-[#E6FAF7] text-[#0A9189]">
                 <Icon size={14} />
               </span>
-              <span className="min-w-0 flex-1 text-[10px] font-medium leading-tight text-[#0F2D4A]">
-                {q.label}
+              <span className="min-w-0 flex-1 text-[9.5px] font-medium leading-tight text-[#0F2D4A]">
+                {action.label}
               </span>
-              <ChevronRight size={11} className="shrink-0 text-ink-muted" />
+              <ChevronRight
+                size={10}
+                className="shrink-0 text-ink-muted transition group-hover:translate-x-0.5"
+              />
             </button>
           );
         })}
       </div>
 
-      <button
-        type="button"
-        onClick={() => comingSoon("Find a Doctor")}
-        className="mt-2 flex w-full items-center gap-2.5 rounded-xl bg-[#E9FBF8] p-3 text-left transition hover:bg-[#DDF7F2]"
-      >
-        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white text-[#0A9189]">
-          <Users size={16} />
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="block text-[11.5px] font-semibold text-[#0F2D4A]">Find a Doctor</span>
-          <span className="mt-0.5 block text-[10px] leading-snug text-[#5B6B7C]">
-            Explore our specialists and find the right doctor for your needs.
+      <div className="relative mt-2.5 flex flex-1 items-center overflow-hidden rounded-xl bg-gradient-to-br from-[#EFE9FF] via-[#E9F8F9] to-[#DDF7F1] p-3.5">
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -right-5 -top-6 h-20 w-20 rounded-full bg-white/40"
+        />
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -bottom-8 -left-4 h-20 w-20 rounded-full bg-[#C7F0E8]/50"
+        />
+        <div className="relative flex items-center gap-2.5">
+          <div className="min-w-0 flex-1">
+            <p className="text-[10.5px] font-semibold leading-snug text-[#0F2D4A]">
+              Manage your health on the go
+            </p>
+            <p className="mt-0.5 text-[9px] leading-snug text-[#5B6B7C]">
+              Access Medora from your phone or computer.
+            </p>
+          </div>
+          <span className="grid h-11 w-9 shrink-0 place-items-center rounded-lg border border-white/70 bg-white/80 text-[#0A9189] shadow-sm">
+            <Smartphone size={20} />
           </span>
-        </span>
-        <ChevronRight size={14} className="shrink-0 text-[#5B6B7C]" />
-      </button>
+        </div>
+      </div>
     </div>
   );
 }

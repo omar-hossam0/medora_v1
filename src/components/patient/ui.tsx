@@ -57,6 +57,7 @@ const STATUS_STYLES: Record<string, string> = {
   Cancelled: "bg-[#FDECEF] text-[#E5484D]",
   Pending: "bg-[#FFF6E5] text-[#C77A0A]",
   Normal: "bg-[#E9F9EF] text-[#1E9E56]",
+  "Slightly High": "bg-[#FFF6E5] text-[#C77A0A]",
   High: "bg-[#FDECEF] text-[#E5484D]",
 };
 
@@ -64,7 +65,7 @@ export function StatusBadge({ status }: { status: string }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold",
+        "inline-flex shrink-0 items-center whitespace-nowrap rounded-full px-2 py-0.5 text-[9.5px] font-semibold",
         STATUS_STYLES[status] ?? "bg-surface-subtle text-ink-secondary",
       )}
     >

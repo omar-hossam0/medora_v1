@@ -39,9 +39,22 @@ type Props = {
   value: string; // ISO yyyy-mm-dd
   onChange: (iso: string) => void;
   error?: string;
+  /** Optional field height in px (defaults to 50 to preserve auth pages). */
+  height?: number;
+  /** Optional icon colour class (defaults to the muted auth style). */
+  iconClassName?: string;
 };
 
-export function DateField({ id, label, placeholder, value, onChange, error }: Props) {
+export function DateField({
+  id,
+  label,
+  placeholder,
+  value,
+  onChange,
+  error,
+  height = 50,
+  iconClassName = "text-ink-muted",
+}: Props) {
   const [open, setOpen] = useState(false);
   const anchorRef = useRef<HTMLButtonElement>(null);
 
@@ -98,8 +111,9 @@ export function DateField({ id, label, placeholder, value, onChange, error }: Pr
         onClick={() => (open ? setOpen(false) : openPicker())}
         aria-haspopup="dialog"
         aria-expanded={open}
+        style={{ height }}
         className={cn(
-          "relative flex h-[50px] w-full items-center rounded-[14px] border bg-white pl-10 pr-3 text-left text-[13.5px] outline-none transition-all",
+          "relative flex w-full items-center rounded-[14px] border bg-white pl-10 pr-3 text-left text-[13.5px] outline-none transition-all",
           error
             ? "border-red-300 focus-visible:border-red-400 focus-visible:ring-4 focus-visible:ring-red-100"
             : "border-line hover:border-primary/40 focus-visible:border-primary focus-visible:ring-4 focus-visible:ring-primary/10",
@@ -108,7 +122,7 @@ export function DateField({ id, label, placeholder, value, onChange, error }: Pr
         <Calendar
           size={17}
           aria-hidden
-          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-muted"
+          className={cn("pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2", iconClassName)}
         />
         <span className={cn("truncate", value ? "text-navy" : "text-ink-muted/80")}>
           {value ? formatDisplay(value) : placeholder}

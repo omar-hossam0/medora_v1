@@ -14,6 +14,7 @@ import devicesMockup from "@/assets/hq/devices-mockup.png";
 import reception from "@/assets/hq/reception.jpg";
 import loginBg from "@/assets/Modern Medora Healthcare Lobby.png";
 import adminHero from "@/assets/hq/admin-hero.jpg";
+import patientHero from "@/assets/Warm Doctor-Patient Consultation at Medora Healthcare.png";
 
 import aiAnalysis from "@/assets/05_ai_analysis.png";
 import consultation from "@/assets/06_consultation.png";
@@ -63,6 +64,7 @@ export const ASSETS = {
   reception,
   loginBg,
   adminHero,
+  patientHero,
   aiAnalysis,
   consultation,
   receptionStaff,
