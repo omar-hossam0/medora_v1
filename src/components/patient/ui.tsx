@@ -19,10 +19,13 @@ export function Avatar({
   name,
   size = 40,
   className,
+  roundedClassName = "rounded-full",
 }: {
   name: string;
   size?: number;
   className?: string;
+  /** Corner treatment for non-circular fallbacks (e.g. doctor card portraits). */
+  roundedClassName?: string;
 }) {
   const initials = name
     .replace(/^Dr\.\s*/i, "")
@@ -35,7 +38,8 @@ export function Avatar({
     <span
       aria-hidden
       className={cn(
-        "inline-grid shrink-0 place-items-center rounded-full font-semibold text-white ring-2 ring-white",
+        "inline-grid shrink-0 place-items-center font-semibold text-white ring-2 ring-white",
+        roundedClassName,
         className,
       )}
       style={{
@@ -61,11 +65,18 @@ const STATUS_STYLES: Record<string, string> = {
   High: "bg-[#FDECEF] text-[#E5484D]",
 };
 
-export function StatusBadge({ status }: { status: string }) {
+export function StatusBadge({
+  status,
+  size = "sm",
+}: {
+  status: string;
+  size?: "sm" | "md";
+}) {
   return (
     <span
       className={cn(
-        "inline-flex shrink-0 items-center whitespace-nowrap rounded-full px-2 py-0.5 text-[9.5px] font-semibold",
+        "inline-flex shrink-0 items-center whitespace-nowrap rounded-full font-semibold",
+        size === "md" ? "px-2.5 py-1 text-[10.5px]" : "px-2 py-0.5 text-[9.5px]",
         STATUS_STYLES[status] ?? "bg-surface-subtle text-ink-secondary",
       )}
     >
