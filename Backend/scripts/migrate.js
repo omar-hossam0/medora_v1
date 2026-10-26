@@ -46,13 +46,13 @@ async function runMigrations() {
 
     // Verify created tables
     const res = await client.query(`
-      SELECT table_name 
+      SELECT current_database() AS database_name, table_name
       FROM information_schema.tables 
       WHERE table_schema = 'public' 
       ORDER BY table_name;
     `);
 
-    console.log("\nCurrent public tables in medora_db:");
+    console.log(`\nCurrent public tables in ${res.rows[0]?.database_name || "the connected database"}:`);
     res.rows.forEach((r) => console.log(` - ${r.table_name}`));
 
     console.log("\nMigrations completed successfully.\n");
